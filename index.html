@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Budge the House Down</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Budge the House Down tells you exactly what to move into each pot on payday, so every bill, card and joint expense is covered.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: navy hero with a live "payday split" receipt, then alternating text/phone bands, a split-by-income worked example, platforms and a closing call to action. */
+:root {
+  --ink: #14233f;          /* deep navy: hero and headings */
+  --paper: #f3f5fa;        /* cool off-white page */
+  --card: #ffffff;
+  --text: #1a2233;
+  --muted: #5a6478;
+  --line: #d9dfea;
+  --coin: #e0a53a;         /* the one warm accent: money moving */
+  --coin-ink: #6b4708;
+  --tick: #2f8a5b;
+  --warn: #c2562d;
+  --hero-text: #eef2fa;
+  --hero-muted: #b5c1d8;
+  --soft: #e5eaf4;
+  --rule: #14233f;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ink: #0d1628; --paper: #10151f; --card: #182030; --text: #e6eaf2; --muted: #a2adc2; --line: #2a3447;
+    --coin: #f0b955; --coin-ink: #f6d391; --tick: #5cc18c; --warn: #ec8a62; --hero-text: #eef2fa; --hero-muted: #a9b6cf;
+    --soft: #1f2a3e; --rule: #f0b955; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ink: #0d1628; --paper: #10151f; --card: #182030; --text: #e6eaf2; --muted: #a2adc2; --line: #2a3447;
+  --coin: #f0b955; --coin-ink: #f6d391; --tick: #5cc18c; --warn: #ec8a62; --hero-text: #eef2fa; --hero-muted: #a9b6cf;
+  --soft: #1f2a3e; --rule: #f0b955; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--text); font: 17px/1.6 var(--body); }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.08; margin: 0; }
+p { margin: 0; }
+a { color: inherit; }
+.band { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1120px; margin: 0 auto; }
+.money { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font: 600 13px/1.2 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--coin-ink); }
+:focus-visible { outline: 3px solid var(--coin); outline-offset: 3px; border-radius: 6px; }
+
+/* ---------- nav + hero ---------- */
+.hero { background: var(--ink); color: var(--hero-text); padding-block: 18px 72px; overflow: hidden; }
+nav.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.brand { display: flex; align-items: center; gap: 10px; font: 800 19px/1 var(--display); text-decoration: none; }
+.brand svg { flex: none; }
+nav.top .links { display: flex; gap: 22px; font-size: 15px; color: var(--hero-muted); }
+nav.top .links a { text-decoration: none; }
+nav.top .links a:hover { color: var(--hero-text); }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 56px; align-items: center; margin-top: 64px; }
+.hero h1 { font-size: clamp(44px, 7.4vw, 88px); font-weight: 800; letter-spacing: -.02em; }
+.hero h1 em { font-style: normal; color: var(--coin); }
+.hero .lede { font-size: clamp(18px, 2.1vw, 21px); color: var(--hero-muted); max-width: 34ch; margin-top: 22px; }
+.ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 22px; border-radius: 999px; font: 700 16px/1 var(--body); text-decoration: none; }
+.btn.primary { background: var(--coin); color: #2a1b02; }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn.ghost { color: var(--hero-text); box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 35%); }
+.btn.ghost:hover { box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 70%); }
+.platforms { margin-top: 22px; font-size: 14px; color: var(--hero-muted); }
+
+/* the payday receipt: the hero's thesis */
+.receipt {
+  background: #fbfaf6; color: #1b2233; border-radius: 6px; padding: 26px 26px 22px;
+  font-family: var(--mono); font-size: 15px; box-shadow: 0 30px 60px rgb(0 0 0 / 35%);
+  transform: rotate(1.6deg); max-width: 430px; justify-self: end; width: 100%;
+  -webkit-mask: radial-gradient(circle 7px at 50% 100%, transparent 98%, #000) 0 0 / 22px 100% repeat-x;
+          mask: radial-gradient(circle 7px at 50% 100%, transparent 98%, #000) 0 0 / 22px 100% repeat-x;
+  padding-bottom: 34px;
+}
+.receipt .head { display: flex; justify-content: space-between; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #6b7385; }
+.receipt .pay { display: flex; justify-content: space-between; align-items: baseline; margin: 14px 0 6px; font-size: 17px; font-weight: 600; }
+.receipt .pay b { font-size: 26px; }
+.receipt hr { border: 0; border-top: 1.5px dashed #c7ccd6; margin: 14px 0; }
+.receipt ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.receipt li { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.receipt .box { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #9aa3b5; display: grid; place-items: center; }
+.receipt li.done .box { background: #2f8a5b; border-color: #2f8a5b; }
+.receipt li.done .box::after { content: ""; width: 5px; height: 9px; border: solid #fff; border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg); }
+.receipt li.done .name { text-decoration: line-through; color: #6b7385; }
+.receipt .name { font-family: var(--body); font-size: 15px; min-width: 0; }
+.receipt .left { display: flex; justify-content: space-between; font-weight: 600; font-size: 16px; }
+.receipt .left span:last-child { color: #2f8a5b; }
+.receipt .note { margin-top: 14px; font-family: var(--body); font-size: 13px; color: #a2482a; background: #fbe9e1; padding: 8px 10px; border-radius: 6px; }
+@media (prefers-reduced-motion: no-preference) {
+  .receipt li { animation: slip .5s ease-out both; }
+  .receipt li:nth-child(2) { animation-delay: .12s; }
+  .receipt li:nth-child(3) { animation-delay: .24s; }
+  @keyframes slip { from { transform: translateX(14px); opacity: .25; } to { transform: none; opacity: 1; } }
+}
+
+/* ---------- sections ---------- */
+section.feature { padding-block: 88px 0; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: center; }
+.split.flip .text { order: 2; }
+.text h2 { font-size: clamp(32px, 4.4vw, 50px); font-weight: 800; letter-spacing: -.015em; margin-top: 10px; }
+.text p.lead { font-size: 19px; color: var(--muted); margin-top: 16px; max-width: 46ch; }
+.points { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 14px; max-width: 48ch; }
+.points li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; }
+.points li::before { content: ""; width: 10px; height: 10px; margin: 9px 0 0 6px; border-radius: 50%; background: var(--coin); }
+.points b { color: var(--text); }
+.phone { justify-self: center; width: min(330px, 100%); }
+.phone img {
+  display: block; width: 100%; aspect-ratio: 780 / 1560; object-fit: cover; object-position: top;
+  border-radius: 36px; border: 9px solid #0c111b; background: #0c111b;
+  box-shadow: 0 28px 60px rgb(20 35 63 / 22%), 0 2px 6px rgb(20 35 63 / 18%);
+}
+.phone figcaption { text-align: center; font-size: 13px; color: var(--muted); margin-top: 12px; }
+.pair { display: flex; gap: 20px; justify-content: center; }
+.pair .phone { width: min(260px, 48%); }
+.pair .phone:nth-child(2) { margin-top: 56px; }
+
+/* ---------- small features ---------- */
+.grid-band { padding-block: 96px 0; }
+.grid-head { max-width: 640px; }
+.grid-head h2 { font-size: clamp(30px, 4vw, 44px); font-weight: 800; margin-top: 10px; }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; margin-top: 36px; }
+.tile { background: var(--card); padding: 26px 24px 28px; display: grid; gap: 8px; align-content: start; }
+.tile h3 { font-size: 21px; font-weight: 700; }
+.tile p { color: var(--muted); font-size: 16px; }
+.tile .tag { font: 600 12px/1 var(--mono); color: var(--coin-ink); letter-spacing: .04em; }
+
+/* ---------- fair split ---------- */
+.fair { padding-block: 96px 0; }
+.fair-card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: clamp(24px, 4vw, 48px); display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 48px; align-items: center; }
+.fair-card h2 { font-size: clamp(30px, 4vw, 44px); font-weight: 800; margin-top: 10px; }
+.fair-card p { color: var(--muted); margin-top: 14px; max-width: 44ch; }
+.bar { display: flex; height: 54px; border-radius: 10px; overflow: hidden; font: 600 15px/1 var(--mono); }
+.bar span { display: flex; align-items: center; padding: 0 14px; white-space: nowrap; }
+.bar .a { background: var(--ink); color: var(--hero-text); width: 58.8%; }
+.bar .b { background: var(--coin); color: #2a1b02; flex: 1; }
+.rows { margin-top: 18px; display: grid; gap: 0; }
+.rows div { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 18px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 16px; }
+.rows div:last-child { border-bottom: 0; }
+.rows .h { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); padding-bottom: 6px; }
+.rows .money { text-align: right; min-width: 7ch; }
+.rows .total { font-weight: 700; }
+
+/* ---------- privacy ---------- */
+.privacy { padding-block: 96px 0; }
+.privacy .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; }
+.privacy h2 { font-size: clamp(30px, 4vw, 44px); font-weight: 800; margin-top: 10px; }
+.privacy dl { margin: 0; display: grid; gap: 18px; }
+.privacy dt { font-weight: 700; }
+.privacy dd { margin: 2px 0 0; color: var(--muted); }
+
+/* ---------- steps + closing ---------- */
+.steps { padding-block: 96px 0; }
+.steps ol { list-style: none; padding: 0; margin: 32px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; counter-reset: s; }
+.steps li { counter-increment: s; border-top: 3px solid var(--rule); padding-top: 18px; }
+.steps li::before { content: counter(s); font: 800 40px/1 var(--display); color: var(--coin-ink); display: block; margin-bottom: 10px; }
+.steps h3 { font-size: 22px; }
+.steps p { color: var(--muted); margin-top: 6px; }
+.closing { margin-top: 110px; background: var(--ink); color: var(--hero-text); padding-block: 72px; }
+.closing .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 28px; }
+.closing h2 { font-size: clamp(32px, 5vw, 56px); font-weight: 800; max-width: 16ch; }
+.closing p { color: var(--hero-muted); margin-top: 10px; }
+footer { background: var(--ink); color: var(--hero-muted); font-size: 13px; padding-block: 0 36px; }
+footer .wrap { border-top: 1px solid rgb(255 255 255 / 12%); padding-top: 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; }
+
+@media (max-width: 860px) {
+  nav.top .links { display: none; }
+  .hero-grid, .split, .fair-card, .privacy .wrap { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .hero-grid { margin-top: 40px; }
+  .receipt { justify-self: center; transform: rotate(1deg); }
+  .split.flip .text { order: 0; }
+  .tiles { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .steps ol { grid-template-columns: minmax(0, 1fr); }
+  section.feature, .grid-band, .fair, .privacy, .steps { padding-top: 72px; }
+}
+@media (max-width: 560px) {
+  .tiles { grid-template-columns: minmax(0, 1fr); }
+  .pair .phone:nth-child(2) { margin-top: 28px; }
+  .bar span { padding: 0 10px; font-size: 13px; }
+}
+</style>
+<style>html{color-scheme:light} body{margin:0} img{max-width:100%}</style>
+</head>
+<body>
+<header class="hero band">
+  <div class="wrap">
+    <nav class="top" aria-label="Main">
+      <a class="brand" href="#top" id="top">
+        <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><path d="M4 15 16 5l12 10v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z" fill="#e0a53a"/><path d="M11 20h10M11 24h6" stroke="#14233f" stroke-width="2.4" stroke-linecap="round"/></svg>
+        Budge the House Down
+      </a>
+      <div class="links"><a href="#payday">Payday</a><a href="#bills">Bills</a><a href="#split">Fair split</a><a href="#privacy">Privacy</a></div>
+    </nav>
+
+    <div class="hero-grid">
+      <div>
+        <h1>Every payday, <em>sorted.</em></h1>
+        <p class="lede">Budge works out exactly what to move into each pot when you get paid, so every bill, card and joint expense is covered, and tells you before anything runs short.</p>
+        <div class="ctas">
+          <a class="btn primary" href="https://liamkildunne-lang.github.io/household-budget-web/">Open the app</a>
+          <a class="btn ghost" href="#payday">See how it works</a>
+        </div>
+        <p class="platforms">Android phone · Windows PC · iPhone (in Safari)</p>
+      </div>
+
+      <div class="receipt" role="img" aria-label="Example payday: £610 take-home split into three pots, two ticked off, £284.34 left">
+        <div class="head"><span>Payday</span><span>Fri 13 Nov</span></div>
+        <div class="pay"><span>Take-home</span><b class="money">£610.00</b></div>
+        <hr>
+        <ul>
+          <li class="done"><span class="box"></span><span class="name">Direct debits</span><span class="money">£33.23</span></li>
+          <li class="done"><span class="box"></span><span class="name">Combined bills</span><span class="money">£238.39</span></li>
+          <li><span class="box"></span><span class="name">Card payments</span><span class="money">£54.04</span></li>
+        </ul>
+        <hr>
+        <div class="left"><span>Yours to spend or save</span><span class="money">£284.34</span></div>
+        <p class="note">Card payments could run short: Amex £80 goes out Sun 22 Nov.</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="feature band" id="payday">
+    <div class="wrap split">
+      <div class="text">
+        <span class="eyebrow">Payday</span>
+        <h2>Move the same amount, every payday.</h2>
+        <p class="lead">Weekly, fortnightly, every four weeks or monthly. Budge spreads every bill, card and saving across your paydays, so each pot gets a steady amount and nothing has to be worked out.</p>
+        <ul class="points">
+          <li><span><b>Tick each pot off</b> as you move the money, and see what's moved against the plan.</span></li>
+          <li><span><b>Warned before it runs short.</b> If a payment leaves a pot before its money is in, you'll know which one and when.</span></li>
+          <li><span><b>A nudge on payday.</b> Your phone tells you what to move, and again two days before big bills and card payments.</span></li>
+        </ul>
+      </div>
+      <figure class="phone"><img src="img/dashboard.jpg" alt="Dashboard showing the payday checklist, a shop-around reminder and monthly totals"><figcaption>The Dashboard on payday</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="feature band" id="bills">
+    <div class="wrap split flip">
+      <div class="text">
+        <span class="eyebrow">Bills</span>
+        <h2>Spot every price rise before it costs you.</h2>
+        <p class="lead">Download your bank statement as a CSV and Budge checks it against your bills and cards. It runs on your device, and nothing is uploaded.</p>
+        <ul class="points">
+          <li><span><b>Price changes flagged</b>, with one tap to update and the old price kept in its history.</span></li>
+          <li><span><b>Unknown direct debits found</b>, so forgotten subscriptions don't slip through.</span></li>
+          <li><span><b>Deal end dates</b> remind you a month before renewal: “up £4.00 since Nov 2025”.</span></li>
+        </ul>
+      </div>
+      <div class="pair">
+        <figure class="phone"><img src="img/statement.jpg" alt="Bank statement check showing a price change, unrecognised payments and a card payment" loading="lazy"><figcaption>Statement check</figcaption></figure>
+        <figure class="phone"><img src="img/billform.jpg" alt="A bill with its deal end date and price history" loading="lazy"><figcaption>Price history</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid-band band">
+    <div class="wrap">
+      <div class="grid-head">
+        <span class="eyebrow">Everything in one place</span>
+        <h2>The whole household budget, kept in step.</h2>
+      </div>
+      <div class="tiles">
+        <div class="tile"><span class="tag">CARDS</span><h3>Clear cards by a date</h3><p>Pick when you want each card paid off. Budge works out the monthly payment and takes direct debits off automatically.</p></div>
+        <div class="tile"><span class="tag">SAVINGS</span><h3>Goals with a weekly figure</h3><p>A holiday by June, an emergency fund by Christmas. See what to put away each week and each payday.</p></div>
+        <div class="tile"><span class="tag">MORTGAGE</span><h3>See what overpaying saves</h3><p>Try £200 a month or a one-off lump sum, and see the years and interest it saves. A reminder before your fix ends, too.</p></div>
+        <div class="tile"><span class="tag">CALENDAR</span><h3>Know what leaves when</h3><p>Every payday, bill and card payment on one calendar, with a week-by-week view of money in and out.</p></div>
+        <div class="tile"><span class="tag">CREDIT</span><h3>Credit used, at a glance</h3><p>How much of your limits you're using across every card, with under 30% as the target lenders like.</p></div>
+        <div class="tile"><span class="tag">EXPORT</span><h3>Your data, any time</h3><p>Download everything as an Excel workbook or a full backup. You're never locked in.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="fair band" id="split">
+    <div class="wrap fair-card">
+      <div>
+        <span class="eyebrow">Living together</span>
+        <h2>Joint bills, split by what you each take home.</h2>
+        <p>Budge splits shared bills in proportion to each person's pay that month, and tells you exactly what to pay your partner and when. Each of you sees the joint bills; your payslips, cards and savings stay yours.</p>
+      </div>
+      <div>
+        <div class="bar" role="img" aria-label="Joint bills split 59% to Liam and 41% to Ellen"><span class="a">Liam 59%</span><span class="b">Ellen 41%</span></div>
+        <div class="rows">
+          <div class="h"><span>This month</span><span class="money">Take-home</span><span class="money">Pays</span></div>
+          <div><span>Liam</span><span class="money">£2,640.00</span><span class="money">£932.23</span></div>
+          <div><span>Ellen</span><span class="money">£1,850.00</span><span class="money">£653.27</span></div>
+          <div class="total"><span>Joint bills</span><span class="money">£4,490.00</span><span class="money">£1,585.50</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="privacy band" id="privacy">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow">Private by design</span>
+        <h2>Your money stays your business.</h2>
+      </div>
+      <dl>
+        <div><dt>No bank login needed</dt><dd>Budge never connects to your bank. You add your pay and bills, or import a statement file that's read on your device.</dd></div>
+        <div><dt>Locked down on the server</dt><dd>Each person's data is protected by the database's own security rules. Others in your household only ever see joint bills and your monthly take-home total.</dd></div>
+        <div><dt>Locked on your phone</dt><dd>Fingerprint, face or PIN to open the app. Screenshots are blocked and it's hidden in your recent apps.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="steps band">
+    <div class="wrap">
+      <span class="eyebrow">Getting started</span>
+      <ol>
+        <li><h3>Add your pay</h3><p>Your paydays and take-home, or bring in your existing budget spreadsheet.</p></li>
+        <li><h3>Add bills and cards</h3><p>Joint or your own, with the day each one goes out and which pot pays it.</p></li>
+        <li><h3>Move what it says</h3><p>On payday, move the amounts into your pots and tick them off. That's it until next payday.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="closing band">
+    <div class="wrap">
+      <div>
+        <h2>Bring the house budget down to earth.</h2>
+        <p>Works on Android, Windows and iPhone, all kept in sync.</p>
+      </div>
+      <a class="btn primary" href="https://liamkildunne-lang.github.io/household-budget-web/">Open the app</a>
+    </div>
+  </section>
+</main>
+
+<footer class="band">
+  <div class="wrap">
+    <span>Budge the House Down</span>
+    <span>Screens and figures shown are examples.</span>
+  </div>
+</footer>
+</body>
+</html>
